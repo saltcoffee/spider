@@ -1,5 +1,6 @@
 # -*- coding:utf-8 -*-
 # author: guagua
+# date:2013.12.1
 
 import urllib
 import urllib2
@@ -8,7 +9,7 @@ import cookielib
 import time
 
 class LoginDouban(object):
-	"""docstring for ClassName"""
+	"""docstring for ClassName""" m
 	def __init__(self, email, password):
 		#super(ClassName, self).__init__()
 		#self.response = response
