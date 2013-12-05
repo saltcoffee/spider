@@ -7,6 +7,8 @@ import urllib2
 import re
 import cookielib
 import time
+import random
+import Queue
 
 class LoginDouban(object):
 	"""docstring for ClassName""" 
@@ -30,7 +32,6 @@ class LoginDouban(object):
 		}
 
 		req = urllib2.Request(self.url)
-
 
 		for  item in head:
 			req.add_header(item, head[item])
@@ -60,50 +61,31 @@ class LoginDouban(object):
 	
 	def post_douban(self):
 		html = self.response.read()
-		#print html
 		ckcode = re.findall(r'<a href="http://www.douban.com/accounts/logout\?.+ck=(.*?)">', html)
-		#print ckcode
-		#print type(ckcode[0])
 		content = raw_input("我说:")
 		dic = {
 			"ck":ckcode[0],
 			"comment":content
 		}
-
 		self.response = self.opener.open("http://www.douban.com/?", urllib.urlencode(dic))
 		if self.response.geturl() == "http://www.douban.com/":
 		    print 'post success !'
 
-		#print self.response.read()
 
 
 	'''小组话题抢沙发'''
 	def sofa(self):
 		self.response = self.opener.open("http://www.douban.com/group/hangzhou/#topics")
-		#print repo
 		html = self.response.read()
-		#print html
 		ckcode = re.findall(r'<a href="http://www.douban.com/accounts/logout\?.+ck=(.*?)">', html)
-		print ckcode
-        
-		#regextopicid = re.compile(r'<a class="" title=.+ href="http://www.douban.com/group/topic/(.*?)/">.+</a>')
-		#topicid = re.findall(r'<a href="http://www.douban.com/group/topic/(.*?)/" title="[^\"]+" class="">[^<]+</a>', html)
-		#print topicid
+   		
+		topicid_and_count = re.findall(r'topic/(\d+?)/.*?class="">.*?<td nowrap="nowrap" class="">(.*?)</td>', html, re.DOTALL)
 
-		#regexnum = re.compile(r'<td nowrap="nowrap" class=""></td>')
-		#count = regexnum.findall(html)
-		
-		topicid_and_count = re.findall(r'<a href="http://www.douban.com/group/topic/(.*?)/" title="[^\"]+" class="">[^<]+</a>[^<]+</td>[^<]+<td nowrap="nowrap"><a href="[^\"]+" class="">[^<]+</a></td>[^<]+<td nowrap="nowrap" class="">(.*?)</td>', html, re.DOTALL)
-
-		# print len(count)
-		# print len(topicid)
-		#print len(topicid_and_count)
-		#print topicid_and_count
-
+		replays = ['哦', '呵呵', '@@', '沙发']
 
 		topics = {
 			"ck":ckcode[0],
-			"rv_comment":"哦。",
+			"rv_comment":random.choice(replays),
 			"start":"0",
 			"submit_btn":"加上去"
 		}
