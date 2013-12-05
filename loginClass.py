@@ -35,7 +35,7 @@ class LoginDouban(object):
 		for  item in head:
 			req.add_header(item, head[item])
 
-		self.response = self.opener.open(self.url, urllib.urlencode(self.data))
+		self.response = self.opener.open(req, urllib.urlencode(self.data))
 
 	def login_douban(self):
 		if self.response.geturl() == self.url:
@@ -61,7 +61,7 @@ class LoginDouban(object):
 	def post_douban(self):
 		html = self.response.read()
 		#print html
-		ckcode = re.findall(r'<a href="http://www.douban.com/accounts/logout?.+ck=(.*?)">', html)
+		ckcode = re.findall(r'<a href="http://www.douban.com/accounts/logout\?.+ck=(.*?)">', html)
 		#print ckcode
 		#print type(ckcode[0])
 		content = raw_input("我说:")
@@ -73,11 +73,53 @@ class LoginDouban(object):
 		self.response = self.opener.open("http://www.douban.com/?", urllib.urlencode(dic))
 		if self.response.geturl() == "http://www.douban.com/":
 		    print 'post success !'
+
+		#print self.response.read()
+
+
+	'''小组话题抢沙发'''
+	def sofa(self):
+		self.response = self.opener.open("http://www.douban.com/group/hangzhou/#topics")
+		#print repo
+		html = self.response.read()
+		#print html
+		ckcode = re.findall(r'<a href="http://www.douban.com/accounts/logout\?.+ck=(.*?)">', html)
+		print ckcode
+        
+		#regextopicid = re.compile(r'<a class="" title=.+ href="http://www.douban.com/group/topic/(.*?)/">.+</a>')
+		#topicid = re.findall(r'<a href="http://www.douban.com/group/topic/(.*?)/" title="[^\"]+" class="">[^<]+</a>', html)
+		#print topicid
+
+		#regexnum = re.compile(r'<td nowrap="nowrap" class=""></td>')
+		#count = regexnum.findall(html)
+		
+		topicid_and_count = re.findall(r'<a href="http://www.douban.com/group/topic/(.*?)/" title="[^\"]+" class="">[^<]+</a>[^<]+</td>[^<]+<td nowrap="nowrap"><a href="[^\"]+" class="">[^<]+</a></td>[^<]+<td nowrap="nowrap" class="">(.*?)</td>', html, re.DOTALL)
+
+		# print len(count)
+		# print len(topicid)
+		#print len(topicid_and_count)
+		#print topicid_and_count
+
+
+		topics = {
+			"ck":ckcode[0],
+			"rv_comment":"哦。",
+			"start":"0",
+			"submit_btn":"加上去"
+		}
+
+		for item in topicid_and_count:
+			if item[1] == '':
+				self.opener.open("http://www.douban.com/group/topic/" + item[0] + "/add_comment#last?", urllib.urlencode(topics))
+
+##这里要填写话题的ID			
 				            
 
 email = raw_input("Email:")
 password = raw_input("Password:")
 m = LoginDouban(email, password)
 m.login_douban()
-m.post_douban()
-
+#m.post_douban()
+#while (True):
+m.sofa()
+        #time.sleep(10)
